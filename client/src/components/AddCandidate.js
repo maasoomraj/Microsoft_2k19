@@ -15,6 +15,7 @@ class AddCandidate extends Component {
       name:'',
       party:'',
       manifesto:'',
+      constituency:'',
       candidates: null,
       isOwner:false
     }
@@ -32,24 +33,15 @@ class AddCandidate extends Component {
     this.setState({manifesto : event.target.value});
   }
 
-  addCandidate = async () => {
-    console.log("name - " + this.state.name);
-    console.log("party - " + this.state.party);
-    console.log("manifesto - " + this.state.manifesto);
-    await this.state.MasoomInstance.methods.addCandidate(this.state.name, this.state.party, this.state.manifesto).send({from : this.state.account , gas: 1000000});
+  updateConstituency = event => {
+    this.setState({constituency : event.target.value});
   }
 
-  // getCandidates = async () => {
-  //   let result = await this.state.MasoomInstance.methods.getCandidates().call();
-
-  //   this.setState({ candidates : result });
-  //   console.log(this.state.candidates);
-  //   for(let i =0; i <result.length ; i++)
-  //   console.log("From contract - " + result[i].name + " " + result[i].voteCount);
-
-  //   console.log(result);
-    
-  // }
+  addCandidate = async () => {
+    await this.state.MasoomInstance.methods.addCandidate(this.state.name, this.state.party, this.state.manifesto, this.state.constituency).send({from : this.state.account , gas: 1000000});
+    // Reload
+    window.location.reload(false);
+  }
 
   componentDidMount = async () => {
     try {
@@ -71,9 +63,7 @@ class AddCandidate extends Component {
 
       this.setState({ MasoomInstance: instance, web3: web3, account: accounts[0] });
 
-      console.log("Account - " + this.state.account);
       const owner = await this.state.MasoomInstance.methods.getOwner().call();
-      console.log(owner);
       if(this.state.account === owner){
         this.setState({isOwner : true});
       }
@@ -89,64 +79,88 @@ class AddCandidate extends Component {
 
   render() {
     if (!this.state.web3) {
-      return <div>Loading Web3, accounts, and contract...</div>;
+      return (
+        <div className="CandidateDetails">
+          <div className="CandidateDetails-title">
+            <h1>
+            Loading Web3, accounts, and contract..
+            </h1>
+          </div>
+        </div>
+      );
     }
 
     if(!this.state.isOwner){
       return(
-        <div>
-          ONLY OWNER CAN ACCESS
+        <div className="CandidateDetails">
+          <div className="CandidateDetails-title">
+            <h1>
+              ONLY ADMIN CAN ACCESS
+            </h1>
+          </div>
         </div>
       );
     }
     return (
       <div className="App">
-        {/* <div>{this.state.owner}</div> */}
-        {/* <p>Account address - {this.state.account}</p> */}
-        <h2>Add Candidate</h2>
 
-        <FormGroup>
-          <div>
-            <p>Enter Name - </p>
-            <FormControl
+        <div className="CandidateDetails">
+          <div className="CandidateDetails-title">
+            <h1>
+              Add Candidate
+            </h1>
+          </div>
+        </div>
+
+        <div className="form">
+          <FormGroup>
+            <div className="form-label">Enter Name - </div>
+            <div className="form-input">
+              <FormControl
                 input = 'text'
                 value = {this.state.name}
                 onChange={this.updateName}
-            />
-          </div>
-        </FormGroup>
+              />
+            </div>
+          </FormGroup>
 
-        <FormGroup>
-          <div>
-            <p>Enter Party Name - </p>
-            <FormControl
-                input = 'textArea'
-                value = {this.state.party}
-                onChange={this.updateParty}
-            />
-          </div>
-        </FormGroup>
+          <FormGroup>
+              <div className="form-label">Enter Party Name - </div>
+              <div className="form-input">
+                <FormControl
+                    input = 'textArea'
+                    value = {this.state.party}
+                    onChange={this.updateParty}
+                />
+              </div>
+          </FormGroup>
 
-        <FormGroup>
-          <div>
-            <p>Enter Manifesto - </p>
-            <FormControl
-                input = 'text'
-                value = {this.state.manifesto}
-                onChange={this.updateManifesto}
-            />
-          </div>
-        </FormGroup>
-        <br></br>
-        <Button onClick={this.addCandidate}>
-          Add
-        </Button>
-        <br></br>
-        <br></br>
+          <FormGroup>
+              <div className="form-label">Enter Manifesto - </div>
+              <div className="form-input">
+                <FormControl
+                    input = 'text'
+                    value = {this.state.manifesto}
+                    onChange={this.updateManifesto}
+                />
+              </div>
+          </FormGroup>
 
-        {/* <Button onClick={this.getCandidates}>
-          Get Name
-        </Button> */}
+          <FormGroup>
+              <div className="form-label">Enter Constituency Number - </div>
+              <div className="form-input">
+                <FormControl
+                    input = 'text'
+                    value = {this.state.constituency}
+                    onChange={this.updateConstituency}
+                />
+              </div>
+          </FormGroup>
+
+          <Button onClick={this.addCandidate} className="button-vote">
+            Add
+          </Button>
+        </div>
 
 
       </div>

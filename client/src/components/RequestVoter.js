@@ -34,23 +34,10 @@ class RequestVoter extends Component {
   }
 
   addVoter = async () => {
-    console.log("name - " + this.state.name);
-    console.log("aadhar - " + this.state.aadhar);
-    console.log("constituency - " + this.state.constituency);
     await this.state.MasoomInstance.methods.requestVoter(this.state.name, this.state.aadhar, this.state.constituency).send({from : this.state.account , gas: 1000000});
+    // Reload
+    window.location.reload(false);
   }
-
-  // getCandidates = async () => {
-  //   let result = await this.state.MasoomInstance.methods.getCandidates().call();
-
-  //   this.setState({ candidates : result });
-  //   console.log(this.state.candidates);
-  //   for(let i =0; i <result.length ; i++)
-  //   console.log("From contract - " + result[i].name + " " + result[i].voteCount);
-
-  //   console.log(result);
-    
-  // }
 
   componentDidMount = async () => {
     try {
@@ -99,64 +86,77 @@ class RequestVoter extends Component {
 
   render() {
     if (!this.state.web3) {
-      return <div>Loading Web3, accounts, and contract...</div>;
+      return (
+        <div className="CandidateDetails">
+          <div className="CandidateDetails-title">
+            <h1>
+            Loading Web3, accounts, and contract..
+            </h1>
+          </div>
+        </div>
+      );
     }
 
     if(this.state.registered){
       return(
-        <div>
+        <div className="CandidateDetails">
+        <div className="CandidateDetails-title">
+          <h1>
           ALREADY REQUESTED TO REGISTER
+          </h1>
         </div>
+      </div>
       );
     }
     return (
       <div className="App">
         {/* <div>{this.state.owner}</div> */}
         {/* <p>Account address - {this.state.account}</p> */}
-        <h2>Add Voter</h2>
-
-        <FormGroup>
-          <div>
-            <p>Enter Name - </p>
-            <FormControl
-                input = 'text'
-                value = {this.state.name}
-                onChange={this.updateName}
-            />
+        <div className="CandidateDetails">
+          <div className="CandidateDetails-title">
+            <h1>
+              VOTER FORM
+            </h1>
           </div>
+        </div>
+
+        <div className="form">
+        <FormGroup>
+            <div className="form-label">Enter Name - </div>
+            <div className="form-input">
+              <FormControl
+                  input = 'text'
+                  value = {this.state.name}
+                  onChange={this.updateName}
+              />
+            </div>
         </FormGroup>
 
         <FormGroup>
-          <div>
-            <p>Enter Aadhar Number - </p>
-            <FormControl
-                input = 'textArea'
-                value = {this.state.aadhar}
-                onChange={this.updateAadhar}
-            />
-          </div>
+            <div className="form-label">Enter Aadhar Number - </div>
+            <div className="form-input">
+              <FormControl
+                  input = 'textArea'
+                  value = {this.state.aadhar}
+                  onChange={this.updateAadhar}
+              />
+            </div>
         </FormGroup>
 
         <FormGroup>
-          <div>
-            <p>Enter Constituency - </p>
-            <FormControl
-                input = 'text'
-                value = {this.state.constituency}
-                onChange={this.updateConstituency}
-            />
-          </div>
+            <div className="form-label">Enter Constituency - </div>
+            <div className="form-input">
+              <FormControl
+                  input = 'text'
+                  value = {this.state.constituency}
+                  onChange={this.updateConstituency}
+              />
+            </div>
         </FormGroup>
-        <br></br>
-        <Button onClick={this.addVoter}>
+        <Button onClick={this.addVoter}  className="button-vote">
           Request to Add Voter
         </Button>
-        <br></br>
-        <br></br>
-
-        {/* <Button onClick={this.getCandidates}>
-          Get Name
-        </Button> */}
+        </div>
 
 
       </div>

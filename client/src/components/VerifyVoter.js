@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import MasoomContract from "../contracts/MasoomContract.json";
 import getWeb3 from "../getWeb3";
 
+import { Button } from 'react-bootstrap';
+
 import '../index.css';
 
 class VerifyVoter extends Component {
@@ -12,18 +14,10 @@ class VerifyVoter extends Component {
       MasoomInstance: undefined,
       account: null,
       web3: null,
-      votersList: null
+      votersList: null,
+      isOwner:false
     }
   }
-
-  // getCandidates = async () => {
-  //   let result = await this.state.MasoomInstance.methods.getCandidates().call();
-
-  //   this.setState({ candidates : result });
-  //   for(let i =0; i <result.length ; i++)
-  //   console.log("From contract - " + result[i].name + " " + result[i].voteCount);
-    
-  // }
 
   componentDidMount = async () => {
     try {
@@ -48,32 +42,21 @@ class VerifyVoter extends Component {
       this.setState({ MasoomInstance: instance, web3: web3, account: accounts[0] });
 
       let voterCount = await this.state.MasoomInstance.methods.getVoterCount().call();
-      console.log("voterCount - " + voterCount);
 
       let votersList = [];
       for(let i=0;i<voterCount;i++){
           let voterAddress = await this.state.MasoomInstance.methods.voters(i).call();
-          console.log("voterAddress - " + voterAddress);
           let voterDetails = await this.state.MasoomInstance.methods.voterDetails(voterAddress).call();
           if(!voterDetails.hasVoted){
-              console.log("HAS voted");
           }
           votersList.push(voterDetails);
       }
-
-    //   let voters = [];
-    //   voters = await this.state.MasoomInstance.methods.getVoters().call();
-    //   this.setState({ voters : voters });
-
-    //   let votersList = [];
-    //   for(let i=0;i<voters.length;i++){
-    //     let voter = await this.state.MasoomInstance.methods.voterDetails(voters[i]).call();
-    //     // console.log("LIST - " + candidate.name);
-    //     votersList.push(voter);
-    //   }
-
-    //   console.log(votersList);
       this.setState({votersList : votersList});
+
+      const owner = await this.state.MasoomInstance.methods.getOwner().call();
+      if(this.state.account === owner){
+        this.setState({isOwner : true});
+      }
 
     } catch (error) {
       // Catch any errors for any of the above operations.
@@ -84,20 +67,37 @@ class VerifyVoter extends Component {
     }
   };
 
+  verifyVoter = async event => {
+    await this.state.MasoomInstance.methods.verifyVoter(event.target.value).send({from : this.state.account , gas: 1000000});
+    window.location.reload(false);
+  }
+
   render() {
+    if(!this.state.isOwner){
+      return(
+        <div className="CandidateDetails">
+            <div className="CandidateDetails-title">
+              <h1>
+                ONLY ADMIN CAN ACCESS
+              </h1>
+            </div>
+          </div>
+      );
+    }
     let votersList;
     if(this.state.votersList){
         votersList = this.state.votersList.map((voter) => {
         return (
-        <div className="candidateList">
-          <div className="nameList">Name : {voter.name}</div>
-          <div className="partyList">Aadhar : {voter.aadhar}</div>
-          <div className="manifestoList">Constituency : {voter.constituency}</div>
-          {/* <div className="voteCountList">hasVoted : {voter.hasVoted}</div>
-          <div className="voteCountList">isVerified : {voter.isVerified}</div> */}
-          <div className="voteCountList">Voter Address : {voter.voterAddress}</div>
-          <br></br>
-        </div>
+          <div className="candidate">
+            <div className="candidateName">{voter.name}</div>
+            <div className="candidateDetails">
+              <div>Aadhar : {voter.aadhar}</div>
+              <div>Constituency : {voter.constituency}</div>
+              <div>Voter Address : {voter.voterAddress}</div>
+            </div>
+
+            {voter.isVerified ? <Button className="button-verified">Verified</Button> : <Button onClick={this.verifyVoter} value={voter.voterAddress} className="button-verify">Verify</Button>}
+          </div>
         );
       });
     }
@@ -107,9 +107,13 @@ class VerifyVoter extends Component {
     }
     return (
       <div>
-        <h1>
-          Voters List
-        </h1>
+        <div className="CandidateDetails">
+          <div className="CandidateDetails-title">
+            <h1>
+              Verify Voters
+            </h1>
+          </div>
+        </div>
         <div>
           {votersList}
         </div>

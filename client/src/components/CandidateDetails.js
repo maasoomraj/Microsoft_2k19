@@ -22,7 +22,7 @@ class CandidateDetails extends Component {
 
   //   this.setState({ candidates : result });
   //   for(let i =0; i <result.length ; i++)
-  //   console.log("From contract - " + result[i].name + " " + result[i].voteCount);
+
     
   // }
 
@@ -54,11 +54,11 @@ class CandidateDetails extends Component {
       let candidateList = [];
       for(let i=0;i<candidateCount;i++){
         let candidate = await this.state.MasoomInstance.methods.candidateDetails(i).call();
-        // console.log("LIST - " + candidate.name);
+
         candidateList.push(candidate);
       }
 
-      console.log(candidateList);
+
       this.setState({candidateList : candidateList});
 
     } catch (error) {
@@ -75,26 +75,40 @@ class CandidateDetails extends Component {
     if(this.state.candidateList){
       candidateList = this.state.candidateList.map((candidate) => {
         return (
-        <div className="candidateList">
-          <div className="nameList">Name : {candidate.name}</div>
-          <div className="partyList">Party : {candidate.party}</div>
-          <div className="manifestoList">Manifesto : {candidate.manifesto}</div>
-          <div className="voteCountList">Votes : {candidate.voteCount}</div>
-          <br></br>
+        <div className="candidate">
+          <div className="candidateName">{candidate.name}</div>
+          <div className="candidateDetails">
+            <div>Party : {candidate.party}</div>
+            <div>Manifesto : {candidate.manifesto}</div>
+            <div>Constituency Number : {candidate.constituency}</div>
+            <div>Candidate ID : {candidate.candidateId}</div>
+          </div>
         </div>
         );
       });
     }
     
     if (!this.state.web3) {
-      return <div>Loading Web3, accounts, and contract...</div>;
+      return (
+        <div className="CandidateDetails">
+          <div className="CandidateDetails-title">
+            <h1>
+            Loading Web3, accounts, and contract..
+            </h1>
+          </div>
+        </div>
+      );
     }
+    
     return (
-      <div>
-        <h1>
-          Candidates List
-        </h1>
-        <div className="GetName">
+      <div className="CandidateDetails">
+        <div className="CandidateDetails-title">
+          <h1>
+            Candidates List
+          </h1>
+        </div>
+        
+        <div className="CandidateDetails-sub-title">
           Total Number of Candidates - {this.state.candidateCount}
         </div>
         <div>
