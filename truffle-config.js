@@ -1,18 +1,17 @@
 const path = require("path");
-// const fs = require('fs-extra');
-// const HDWalletProvider = require('./@truffle/hdwallet-provider');
-
-// let secrets;
-
-// if(fs.existsSync('secrets.json')){
-//   secrets = JSON.parse(fs.readFileSync('secrets.json','utf8'));
-// }
+const HDWalletProvider = require('@truffle/hdwallet-provider');
 
 module.exports = {
   // See <http://truffleframework.com/docs/advanced/configuration>
   // to customize your Truffle configuration!
   contracts_build_directory: path.join(__dirname, "client/src/contracts"),
-  networks: { 
+  networks: {
+    rinkeyby: {
+      provider: function() {
+        return new HDWalletProvider("minute flame smooth awake juice park power hair scale arena gospel second", "https://rinkeby.infura.io/v3/11efde83b7684163b6d7afaa57820669")
+      },
+      network_id: 4
+    },
     development: { 
       network_id: "*", 
       host: 'localhost', 
