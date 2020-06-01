@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import MasoomContract from "../contracts/MasoomContract.json";
 import getWeb3 from "../getWeb3";
 
+import NavigationAdmin from './NavigationAdmin';
+import Navigation from './Navigation';
+
 import { FormGroup, FormControl,Button } from 'react-bootstrap';
 
 class RequestVoter extends Component {
@@ -16,8 +19,8 @@ class RequestVoter extends Component {
       aadhar:'',
       constituency:'',
       candidates: null,
-      owner:'',
-      registered: false
+      registered: false,
+      isOwner:false
     }
   }
 
@@ -40,6 +43,11 @@ class RequestVoter extends Component {
   }
 
   componentDidMount = async () => {
+    // FOR REFRESHING PAGE ONLY ONCE -
+    if(!window.location.hash){
+      window.location = window.location + '#loaded';
+      window.location.reload();
+    }
     try {
       // Get network provider and web3 instance.
       const web3 = await getWeb3();
@@ -73,8 +81,10 @@ class RequestVoter extends Component {
 
       this.setState({ registered : registered});
 
-      // const _owner = await this.state.MasoomInstance.methods.owner(0);
-      // this.setState({owner : _owner});
+      const owner = await this.state.MasoomInstance.methods.getOwner().call();
+      if(this.state.account === owner){
+        this.setState({isOwner : true});
+      }
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
@@ -93,6 +103,7 @@ class RequestVoter extends Component {
             Loading Web3, accounts, and contract..
             </h1>
           </div>
+        {this.state.isOwner ? <NavigationAdmin /> : <Navigation />}
         </div>
       );
     }
@@ -105,13 +116,12 @@ class RequestVoter extends Component {
           ALREADY REQUESTED TO REGISTER
           </h1>
         </div>
+        {this.state.isOwner ? <NavigationAdmin /> : <Navigation />}
       </div>
       );
     }
     return (
       <div className="App">
-        {/* <div>{this.state.owner}</div> */}
-        {/* <p>Account address - {this.state.account}</p> */}
         <div className="CandidateDetails">
           <div className="CandidateDetails-title">
             <h1>
@@ -119,6 +129,8 @@ class RequestVoter extends Component {
             </h1>
           </div>
         </div>
+
+        {this.state.isOwner ? <NavigationAdmin /> : <Navigation />}
 
         <div className="form">
         <FormGroup>

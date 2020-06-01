@@ -4,6 +4,9 @@ import getWeb3 from "../getWeb3";
 
 import { FormGroup, FormControl,Button } from 'react-bootstrap';
 
+import NavigationAdmin from './NavigationAdmin';
+import Navigation from './Navigation';
+
 class AddCandidate extends Component {
   constructor(props) {
     super(props)
@@ -44,6 +47,12 @@ class AddCandidate extends Component {
   }
 
   componentDidMount = async () => {
+
+    // FOR REFRESHING PAGE ONLY ONCE -
+    if(!window.location.hash){
+      window.location = window.location + '#loaded';
+      window.location.reload();
+    }
     try {
       // Get network provider and web3 instance.
       const web3 = await getWeb3();
@@ -86,6 +95,7 @@ class AddCandidate extends Component {
             Loading Web3, accounts, and contract..
             </h1>
           </div>
+        {this.state.isOwner ? <NavigationAdmin /> : <Navigation />}
         </div>
       );
     }
@@ -98,6 +108,7 @@ class AddCandidate extends Component {
               ONLY ADMIN CAN ACCESS
             </h1>
           </div>
+        {this.state.isOwner ? <NavigationAdmin /> : <Navigation />}
         </div>
       );
     }
@@ -111,6 +122,7 @@ class AddCandidate extends Component {
             </h1>
           </div>
         </div>
+        {this.state.isOwner ? <NavigationAdmin /> : <Navigation />}
 
         <div className="form">
           <FormGroup>
@@ -161,7 +173,6 @@ class AddCandidate extends Component {
             Add
           </Button>
         </div>
-
 
       </div>
     );

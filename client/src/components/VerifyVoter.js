@@ -4,6 +4,9 @@ import getWeb3 from "../getWeb3";
 
 import { Button } from 'react-bootstrap';
 
+import NavigationAdmin from './NavigationAdmin';
+import Navigation from './Navigation';
+
 import '../index.css';
 
 class VerifyVoter extends Component {
@@ -20,6 +23,12 @@ class VerifyVoter extends Component {
   }
 
   componentDidMount = async () => {
+    // FOR REFRESHING PAGE ONLY ONCE -
+    if(!window.location.hash){
+      window.location = window.location + '#loaded';
+      window.location.reload();
+    }
+    
     try {
       // Get network provider and web3 instance.
       const web3 = await getWeb3();
@@ -73,17 +82,6 @@ class VerifyVoter extends Component {
   }
 
   render() {
-    if(!this.state.isOwner){
-      return(
-        <div className="CandidateDetails">
-            <div className="CandidateDetails-title">
-              <h1>
-                ONLY ADMIN CAN ACCESS
-              </h1>
-            </div>
-          </div>
-      );
-    }
     let votersList;
     if(this.state.votersList){
         votersList = this.state.votersList.map((voter) => {
@@ -103,8 +101,31 @@ class VerifyVoter extends Component {
     }
     
     if (!this.state.web3) {
-      return <div>Loading Web3, accounts, and contract...</div>;
+      return (
+        <div className="CandidateDetails">
+          <div className="CandidateDetails-title">
+            <h1>
+            Loading Web3, accounts, and contract..
+            </h1>
+          </div>
+        {this.state.isOwner ? <NavigationAdmin /> : <Navigation />}
+        </div>
+      );
     }
+
+    if(!this.state.isOwner){
+      return(
+        <div className="CandidateDetails">
+            <div className="CandidateDetails-title">
+              <h1>
+                ONLY ADMIN CAN ACCESS
+              </h1>
+            </div>
+        {this.state.isOwner ? <NavigationAdmin /> : <Navigation />}
+          </div>
+      );
+    }
+
     return (
       <div>
         <div className="CandidateDetails">
@@ -114,6 +135,8 @@ class VerifyVoter extends Component {
             </h1>
           </div>
         </div>
+        {this.state.isOwner ? <NavigationAdmin /> : <Navigation />}
+
         <div>
           {votersList}
         </div>

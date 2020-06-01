@@ -2,7 +2,11 @@ import React, { Component } from "react";
 import MasoomContract from "../contracts/MasoomContract.json";
 import getWeb3 from "../getWeb3";
 
-import { FormGroup, FormControl,Button } from 'react-bootstrap';
+import NavigationAdmin from './NavigationAdmin';
+import Navigation from './Navigation';
+
+import { Button } from 'react-bootstrap';
+
 
 class Admin extends Component {
   constructor(props) {
@@ -37,6 +41,11 @@ class Admin extends Component {
 
 
   componentDidMount = async () => {
+    // FOR REFRESHING PAGE ONLY ONCE -
+    if(!window.location.hash){
+      window.location = window.location + '#loaded';
+      window.location.reload();
+    }
     try {
       // Get network provider and web3 instance.
       const web3 = await getWeb3();
@@ -84,6 +93,7 @@ class Admin extends Component {
             Loading Web3, accounts, and contract..
             </h1>
           </div>
+        {this.state.isOwner ? <NavigationAdmin /> : <Navigation />}
         </div>
       );
     }
@@ -96,6 +106,7 @@ class Admin extends Component {
               ONLY ADMIN CAN ACCESS
             </h1>
           </div>
+        {this.state.isOwner ? <NavigationAdmin /> : <Navigation />}
         </div>
       );
     }
@@ -110,6 +121,8 @@ class Admin extends Component {
             </h1>
           </div>
         </div>
+        {this.state.isOwner ? <NavigationAdmin /> : <Navigation />}
+
 
         <div className="admin-buttons">
           {this.state.start

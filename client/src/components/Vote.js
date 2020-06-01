@@ -4,6 +4,9 @@ import getWeb3 from "../getWeb3";
 
 import { FormGroup, FormControl,Button } from 'react-bootstrap';
 
+import NavigationAdmin from './NavigationAdmin';
+import Navigation from './Navigation';
+
 class Vote extends Component {
   constructor(props) {
     super(props)
@@ -18,7 +21,8 @@ class Vote extends Component {
       myAccount:null,
       candidateConstituencyList:null,
       start:false,
-      end:false
+      end:false,
+      isOwner:false
     }
   }
 
@@ -41,6 +45,12 @@ class Vote extends Component {
   }
 
   componentDidMount = async () => {
+    // FOR REFRESHING PAGE ONLY ONCE -
+    if(!window.location.hash){
+      window.location = window.location + '#loaded';
+      window.location.reload();
+    }
+    
     try {
       // Get network provider and web3 instance.
       const web3 = await getWeb3();
@@ -79,6 +89,11 @@ class Vote extends Component {
       let end = await this.state.MasoomInstance.methods.getEnd().call();
 
       this.setState({start : start, end : end });
+
+      const owner = await this.state.MasoomInstance.methods.getOwner().call();
+      if(this.state.account === owner){
+        this.setState({isOwner : true});
+      }
       
     } catch (error) {
       // Catch any errors for any of the above operations.
@@ -116,7 +131,9 @@ class Vote extends Component {
             Loading Web3, accounts, and contract..
             </h1>
           </div>
+        {this.state.isOwner ? <NavigationAdmin /> : <Navigation />}
         </div>
+        
       );
     }
 
@@ -128,6 +145,7 @@ class Vote extends Component {
               VOTING HAS ENDED
             </h1>
           </div>
+        {this.state.isOwner ? <NavigationAdmin /> : <Navigation />}
         </div>
       );
     }
@@ -144,6 +162,7 @@ class Vote extends Component {
         <div className="CandidateDetails-sub-title">
         Please Wait.....While election starts !
         </div>
+        {this.state.isOwner ? <NavigationAdmin /> : <Navigation />}
         </div>
       );
     }
@@ -161,6 +180,7 @@ class Vote extends Component {
           <div className="CandidateDetails-sub-title">
           Please wait....the verification can take time
           </div>
+        {this.state.isOwner ? <NavigationAdmin /> : <Navigation />}
           </div>
         );
       }
@@ -175,6 +195,7 @@ class Vote extends Component {
               YOU HAVE SUCCESSFULLY CASTED YOUR VOTE
             </h1>
           </div>
+        {this.state.isOwner ? <NavigationAdmin /> : <Navigation />}
         </div>
         );
       }
@@ -191,6 +212,7 @@ class Vote extends Component {
             </h1>
           </div>
         </div>
+        {this.state.isOwner ? <NavigationAdmin /> : <Navigation />}
 
         <div className="form">
           <FormGroup>

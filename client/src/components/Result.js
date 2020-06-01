@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import MasoomContract from "../contracts/MasoomContract.json";
 import getWeb3 from "../getWeb3";
 
+import NavigationAdmin from './NavigationAdmin';
+import Navigation from './Navigation';
+
 import { FormGroup, FormControl,Button } from 'react-bootstrap';
 
 class Result extends Component {
@@ -37,7 +40,7 @@ class Result extends Component {
 
         if(this.state.constituency === candidate.constituency){
           candidateList.push(candidate);
-            if(candidate.voteCount == max){
+            if(candidate.voteCount === max){
                 result.push(candidate);
             }else if(candidate.voteCount > max){
                 result = [];
@@ -54,6 +57,12 @@ class Result extends Component {
   }
 
   componentDidMount = async () => {
+    // FOR REFRESHING PAGE ONLY ONCE -
+    if(!window.location.hash){
+      window.location = window.location + '#loaded';
+      window.location.reload();
+    }
+    
     try {
       // Get network provider and web3 instance.
       const web3 = await getWeb3();
@@ -140,6 +149,7 @@ class Result extends Component {
             Loading Web3, accounts, and contract..
             </h1>
           </div>
+        {this.state.isOwner ? <NavigationAdmin /> : <Navigation />}
         </div>
       );
     }
@@ -152,6 +162,7 @@ class Result extends Component {
                 ONLY ADMIN CAN ACCESS
               </h1>
             </div>
+        {this.state.isOwner ? <NavigationAdmin /> : <Navigation />}
           </div>
         );
     }
@@ -164,6 +175,7 @@ class Result extends Component {
           END THE VOTING....TO SEE RESULTS
           </h1>
         </div>
+        {this.state.isOwner ? <NavigationAdmin /> : <Navigation />}
       </div>
       );
     }
@@ -179,6 +191,8 @@ class Result extends Component {
             </h1>
           </div>
         </div>
+        {this.state.isOwner ? <NavigationAdmin /> : <Navigation />}
+
 
         <div className="form">
           <FormGroup>

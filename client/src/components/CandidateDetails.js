@@ -4,6 +4,9 @@ import getWeb3 from "../getWeb3";
 
 import '../index.css';
 
+import NavigationAdmin from './NavigationAdmin';
+import Navigation from './Navigation';
+
 class CandidateDetails extends Component {
   constructor(props) {
     super(props)
@@ -13,7 +16,9 @@ class CandidateDetails extends Component {
       account: null,
       web3: null,
       candidateCount: 0,
-      candidateList: null
+      candidateList: null,
+      loaded:false,
+      isOwner:false
     }
   }
 
@@ -27,6 +32,13 @@ class CandidateDetails extends Component {
   // }
 
   componentDidMount = async () => {
+
+    // FOR REFRESHING PAGE ONLY ONCE -
+    if(!window.location.hash){
+      window.location = window.location + '#loaded';
+      window.location.reload();
+    }
+    
     try {
       // Get network provider and web3 instance.
       const web3 = await getWeb3();
@@ -58,8 +70,12 @@ class CandidateDetails extends Component {
         candidateList.push(candidate);
       }
 
-
       this.setState({candidateList : candidateList});
+
+      const owner = await this.state.MasoomInstance.methods.getOwner().call();
+      if(this.state.account === owner){
+        this.setState({isOwner : true});
+      }
 
     } catch (error) {
       // Catch any errors for any of the above operations.
@@ -69,6 +85,7 @@ class CandidateDetails extends Component {
       console.error(error);
     }
   };
+  
 
   render() {
     let candidateList;
@@ -96,6 +113,7 @@ class CandidateDetails extends Component {
             Loading Web3, accounts, and contract..
             </h1>
           </div>
+        {this.state.isOwner ? <NavigationAdmin /> : <Navigation />}
         </div>
       );
     }
@@ -107,6 +125,8 @@ class CandidateDetails extends Component {
             Candidates List
           </h1>
         </div>
+
+        {this.state.isOwner ? <NavigationAdmin /> : <Navigation />}
         
         <div className="CandidateDetails-sub-title">
           Total Number of Candidates - {this.state.candidateCount}

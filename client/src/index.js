@@ -8,6 +8,7 @@ import VerifyVoter from './components/VerifyVoter';
 import Vote from './components/Vote';
 import Result from './components/Result';
 import Admin from './components/Admin';
+import Home from './components/Home';
 
 // import * as serviceWorker from './serviceWorker';
 
@@ -23,7 +24,8 @@ import history from './history';
 ReactDOM.render(
     <Router history={history}>
         <Switch>
-            <Route exact path='/' component={AddCandidate} />
+            <Route exact path='/' component={Home} />
+            <Route path='/AddCandidate' component={AddCandidate} />
             <Route path='/CandidateDetails' component={CandidateDetails} />
             <Route path='/RequestVoter' component={RequestVoter} />
             <Route path='/VerifyVoter' component={VerifyVoter} />

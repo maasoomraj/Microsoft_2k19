@@ -5,6 +5,7 @@
   "dependencies": {
     "bootstrap": "^3.4.1",
     "history": "^4.10.1",
+    "next": "^9.4.4",
     "react": "16.11.0",
     "react-bootstrap": "^1.0.1",
     "react-bootstrap-table": "^4.3.1",
