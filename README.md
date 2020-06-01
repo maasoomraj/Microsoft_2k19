@@ -32,6 +32,10 @@ Change directory to /VoteChain
 ```
 cd VoteChain
 ```
+Install dependencies
+```
+npm install
+```
 Check if truffle is installed properly
 ```
 truffle version
@@ -40,9 +44,13 @@ Compile all the contracts
 ```
 truffle compile --all
 ```
-Make migrations for the contract
+- Make migrations for the contract ( ganache-cli )
 ```
 truffle migrate --reset
+```
+- Make migrations for the contract ( Metamask )
+```
+truffle migrate --reset rinkeyby
 ```
 Change directory to /client
 ```
